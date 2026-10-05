@@ -20,7 +20,7 @@ int main(){
 
     Pessoa *listaPessoas;
 
-    FILE *arq = fopen("C:\\Users\\joaod\\MINHAS PASTAS\\UTFPR\\2 Periodo\\Estrutura de Dados-01\\Lista de Clientes\\NomeRG10.txt", "r");
+    FILE *arq = fopen("C://Users//joaod//MINHAS PASTAS//UTFPR//2 Periodo//Estrutura de Dados-01//Lista de Clientes 02//NomeRG10.txt", "r");
 
     if (arq == NULL){
         printf("Erro abrindo o arquivo");
@@ -54,6 +54,7 @@ int main(){
 
     int comparacao = 0, movimentacao = 0;
     double tempo = 0;
+    Pessoa **lista_organiazada = NULL;
 
     printf("Escolha uma opcao pelo numero:\n"
     "1 - Inserir no inicio da lista\n"
@@ -66,7 +67,8 @@ int main(){
     "8 - Mostrar a lista na tela\n"
     "9 - Salvar a lista em um arquivo\n"
     "10 - Ler a lista de um arquivo\n"
-    "11 - Sair do sistema\n");
+    "11 - Sair do sistema\n\n"
+    "12 - Selection Sort\n");
     scanf("%d", &opcao);
 
     while (opcao != 11){
@@ -348,8 +350,44 @@ int main(){
                 }
 
                 fclose(arq);
-            }
+            }else if(opcao == 12){
+                comparacao = 0;
+                movimentacao = 0;
+                Pessoa *aux;
+                clock_t inicioTempo = clock();
 
+                lista_organiazada = (Pessoa **) malloc (num_pessoas * sizeof(Pessoa *));
+
+                for(i=0; i<num_pessoas; i++){
+                    lista_organiazada[i] = &listaPessoas[i];
+                }
+
+                for(i=0; i<num_pessoas-1; i++, comparacao++){
+                    int pos_menor = i;
+
+                    for(int j=i+1; j<num_pessoas; j++, comparacao++){
+
+                        comparacao++;
+                        if (lista_organiazada[pos_menor]->rg > lista_organiazada[j]->rg){
+                            pos_menor = j;
+                        }
+                    }
+
+                    movimentacao += 3;
+                    aux = lista_organiazada[i];
+                    lista_organiazada[i] = lista_organiazada[pos_menor];
+                    lista_organiazada[pos_menor] = aux;
+
+                }
+
+                free (lista_organiazada);
+
+                clock_t fimTempo = clock();
+                tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
+
+                printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
+            }
+ 
             printf("Escolha uma opcao pelo numero:\n"
                 "1 - Inserir no inicio da lista\n"
                 "2 - Inserir no fim da lista\n"
@@ -361,7 +399,8 @@ int main(){
                 "8 - Mostrar a lista na tela\n"
                 "9 - Salvar a lista em um arquivo\n"
                 "10 - Ler a lista de um arquivo\n"
-                "11 - Sair do sistema\n");
+                "11 - Sair do sistema\n\n"
+                "12 - Selection Sort\n");
             scanf("%d", &opcao);
 
     }
