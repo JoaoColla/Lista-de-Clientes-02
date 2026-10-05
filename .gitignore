@@ -1,0 +1,48 @@
+# ==========================================
+# Compilação e Binários (C)
+# ==========================================
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+
+# Pastas de saída de build comuns
+bin/
+obj/
+build/
+Debug/
+Release/
+
+# ==========================================
+# Code::Blocks
+# ==========================================
+# Ignora configurações de layout e dependências locais
+*.layout
+*.depend
+# Opcional: descomente a linha abaixo se não quiser compartilhar o workspace
+# *.workspace
+
+# ==========================================
+# VS Code
+# ==========================================
+.vscode/
+
+# ==========================================
+# Arquivos de Texto
+# ==========================================
+*.txt
+
+# Exceção: caso queira manter algum arquivo .txt específico no repositório (ex: README.txt)
+# !README.txt
+
+# ==========================================
+# Arquivos do Sistema Operacional
+# ==========================================
+.DS_Store
+Thumbs.db
+*.stackdump
