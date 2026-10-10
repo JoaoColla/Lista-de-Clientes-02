@@ -52,23 +52,23 @@ int main(){
 
     fclose(arq);
 
-    int comparacao = 0, movimentacao = 0;
+    int comparacao = 0, movimentacao = 0, listaCriada = 0;
     double tempo = 0;
     Pessoa **lista_organiazada = NULL;
 
-    printf("Escolha uma opcao pelo numero:\n"
-    "1 - Inserir no inicio da lista\n"
-    "2 - Inserir no fim da lista\n"
-    "3 - Inserir na posicao N da lista\n"
-    "4 - Retirar um no do inicio da lista\n"
-    "5 - Retirar um no no fim da lista\n"
-    "6 - Retirar um no na posição N\n"
-    "7 - Procurar um no com o campo RG\n"
-    "8 - Mostrar a lista na tela\n"
-    "9 - Salvar a lista em um arquivo\n"
-    "10 - Ler a lista de um arquivo\n"
-    "11 - Sair do sistema\n\n"
-    "12 - Selection Sort\n");
+    printf("\nEscolha uma opcao pelo numero:\n"
+    "[ 1 ] - Inserir no inicio da lista\n"
+    "[ 2 ] - Inserir no fim da lista\n"
+    "[ 3 ] - Inserir na posicao N da lista\n"
+    "[ 4 ] - Retirar um no do inicio da lista\n"
+    "[ 5 ] - Retirar um no no fim da lista\n"
+    "[ 6 ] - Retirar um no na posição N\n"
+    "[ 7 ] - Procurar um no com o campo RG\n"
+    "[ 8 ] - Mostrar a lista na tela\n"
+    "[ 9 ] - Salvar a lista em um arquivo\n"
+    "[ 10 ] - Ler a lista de um arquivo\n"
+    "[ 11 ] - Sair do sistema\n\n"
+    "[ 12 ] - Ordenar\n\n");
     scanf("%d", &opcao);
 
     while (opcao != 11){
@@ -351,60 +351,160 @@ int main(){
 
                 fclose(arq);
             }else if(opcao == 12){
-                comparacao = 0;
-                movimentacao = 0;
-                Pessoa *aux;
-                clock_t inicioTempo = clock();
+                int opcao2, organizado = 0;
+                printf("\nEscolha o metodo:\n"
+                    "[ 1 ] - Selection Sort\n"
+                    "[ 2 ] - Insertion Sort\n"
+                    "[ 3 ] - Bubble Sort\n"
+                    "[ 4 ] - Shell Sort\n"
+                    "[ 5 ] - Quick Sort\n"
+                    "[ 6 ] - Merge Sort\n\n"
+                    "[ 7 ] - Exibir a lista organizada\n"
+                    "[ 8 ] - Limpar ordenacao\n"
+                    "[ 9 ] - Apagar lista ordenada\n");
+                
+                scanf("%d", &opcao2);
 
-                lista_organiazada = (Pessoa **) malloc (num_pessoas * sizeof(Pessoa *));
-
-                for(i=0; i<num_pessoas; i++){
-                    lista_organiazada[i] = &listaPessoas[i];
+                if (listaCriada == 0){
+                    lista_organiazada = (Pessoa **) malloc (num_pessoas * sizeof(Pessoa *));
+                    listaCriada = 1;
+                    for(i=0; i<num_pessoas; i++){
+                        lista_organiazada[i] = &listaPessoas[i];
+                    }
                 }
+                
+                
+                if(opcao2 == 8){
+                    for(i=0; i<num_pessoas; i++){
+                        lista_organiazada[i] = &listaPessoas[i];
+                    }
+                    organizado = 0;
 
-                for(i=0; i<num_pessoas-1; i++, comparacao++){
-                    int pos_menor = i;
+                }else if(opcao2 == 9){
+                    free(lista_organiazada);
+                    listaCriada = 0;
+                    
+                } else if(opcao2 == 7){
+                    for (i=0; i<num_pessoas; i++){
+                        printf("%d - %15s - %15ld\n", i+1, lista_organiazada[i]->nome, lista_organiazada[i]->rg);
+                    }
 
-                    for(int j=i+1; j<num_pessoas; j++, comparacao++){
+                }else if (opcao2 == 1){
+                    comparacao = 0;
+                    movimentacao = 0;
+                    Pessoa *aux;
+                    clock_t inicioTempo = clock();
+    
+                    for(i=0; i<num_pessoas-1; i++, comparacao++){
+                        int pos_menor = i;
+    
+                        for(int j=i+1; j<num_pessoas; j++, comparacao++){
+    
+                            comparacao++;
+                            if (lista_organiazada[pos_menor]->rg > lista_organiazada[j]->rg){
+                                pos_menor = j;
+                            }
+                        }
+    
+                        movimentacao += 3;
+                        aux = lista_organiazada[i];
+                        lista_organiazada[i] = lista_organiazada[pos_menor];
+                        lista_organiazada[pos_menor] = aux;
+    
+                    }
+    
+                    
+                    clock_t fimTempo = clock();
+                    tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
+                    
+                    printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
+                    organizado = 1;
+
+                }else if(opcao2 == 2){
+                    comparacao = 0;
+                    movimentacao = 0;
+                    Pessoa *aux;
+                    clock_t inicioTempo = clock();
+                    int j;
+
+                    for (i=1; i<num_pessoas; i++, comparacao++){
+                        aux = lista_organiazada[i];
+                        j = i-1;
+                        
+                        comparacao+=2;
+                        while(j>=0 && lista_organiazada[j]->rg > aux->rg){
+                            lista_organiazada[j+1] = lista_organiazada[j];
+                            j--;
+
+                            comparacao+=2;
+                            movimentacao++;
+                        }
+
+                        movimentacao++;
+                        lista_organiazada[j+1] = aux;
+                    }
+
+                    clock_t fimTempo = clock();
+                    tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
+                    
+                    printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
+                    organizado = 1;
+
+                }else if (opcao2 == 3){
+                    comparacao = 0;
+                    movimentacao = 0;
+                    Pessoa *aux;
+                    clock_t inicioTempo = clock();
+
+                    for (i=0; i<num_pessoas-1; i++, comparacao++){
+                        int trocou = 0;
+
+                        for(int j=0; j<num_pessoas-1-i; j++, comparacao++){
+
+                            comparacao++;
+                            if (lista_organiazada[j]->rg > lista_organiazada[j+1]->rg){
+                                aux = lista_organiazada[j];
+                                lista_organiazada[j] = lista_organiazada[j+1];
+                                lista_organiazada[j+1] = aux;
+                                movimentacao+=3;
+
+                                trocou =1;
+                            }
+                    
+                        }
 
                         comparacao++;
-                        if (lista_organiazada[pos_menor]->rg > lista_organiazada[j]->rg){
-                            pos_menor = j;
+                        if (trocou == 0){
+                            break;
                         }
                     }
 
-                    movimentacao += 3;
-                    aux = lista_organiazada[i];
-                    lista_organiazada[i] = lista_organiazada[pos_menor];
-                    lista_organiazada[pos_menor] = aux;
-
+                    clock_t fimTempo = clock();
+                    tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
+                    
+                    printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
+                    organizado = 1;
                 }
-
-                free (lista_organiazada);
-
-                clock_t fimTempo = clock();
-                tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
-
-                printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
             }
  
-            printf("Escolha uma opcao pelo numero:\n"
-                "1 - Inserir no inicio da lista\n"
-                "2 - Inserir no fim da lista\n"
-                "3 - Inserir na posicao N da lista\n"
-                "4 - Retirar um no do inicio da lista\n"
-                "5 - Retirar um no no fim da lista\n"
-                "6 - Retirar um no na posição N\n"
-                "7 - Procurar um no com o campo RG\n"
-                "8 - Mostrar a lista na tela\n"
-                "9 - Salvar a lista em um arquivo\n"
-                "10 - Ler a lista de um arquivo\n"
-                "11 - Sair do sistema\n\n"
-                "12 - Selection Sort\n");
+            printf("\nEscolha uma opcao pelo numero:\n"
+                "[ 1 ] - Inserir no inicio da lista\n"
+                "[ 2 ] - Inserir no fim da lista\n"
+                "[ 3 ] - Inserir na posicao N da lista\n"
+                "[ 4 ] - Retirar um no do inicio da lista\n"
+                "[ 5 ] - Retirar um no no fim da lista\n"
+                "[ 6 ] - Retirar um no na posição N\n"
+                "[ 7 ] - Procurar um no com o campo RG\n"
+                "[ 8 ] - Mostrar a lista na tela\n"
+                "[ 9 ] - Salvar a lista em um arquivo\n"
+                "[ 10 ] - Ler a lista de um arquivo\n"
+                "[ 11 ] - Sair do sistema\n\n"
+                "[ 12 ] - Ordenar\n\n");
             scanf("%d", &opcao);
-
+            
+        }
+        
+        free(listaPessoas);
+        free (lista_organiazada);
+        return 0;
     }
-
-    free(listaPessoas);
-    return 0;
-}
