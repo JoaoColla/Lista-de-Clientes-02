@@ -7,16 +7,105 @@
 #define MAX_LIN 150
 #define MAX_NOME 100
 
+typedef struct Pessoa{
+    char nome [MAX_NOME];
+    long int rg;
+} Pessoa;
+
+
+int particiona (Pessoa **lista_organiazada, int baixo, int alto, int *comparacao, int *movimentacao){
+
+    Pessoa pivo = *lista_organiazada[(baixo + alto)/2];
+    int i = baixo -1;
+    int j = alto + 1;
+
+    while (true){
+        do{
+            i++;
+           ( *comparacao)++;
+        } while (lista_organiazada[i]->rg < pivo.rg);
+
+        do{
+            j--;
+            (*comparacao)++;
+        } while (lista_organiazada[j]->rg > pivo.rg);
+
+        (*comparacao)++;
+        if (i >= j){
+            return j;
+        }
+
+        (*movimentacao) += 3;
+        Pessoa *aux = lista_organiazada[i];
+        lista_organiazada[i] = lista_organiazada[j];
+        lista_organiazada[j] = aux;
+        
+    }
+}
+
+void quikSort (Pessoa **arr, int baixo, int alto, int *comparacao, int *movimentacao){
+    if (baixo < alto){
+        int p = particiona(arr, baixo, alto, comparacao, movimentacao);
+
+        quikSort(arr, baixo, p, comparacao, movimentacao);
+        quikSort(arr, p+1, alto, comparacao, movimentacao);
+    }
+
+}
+
+void merge(Pessoa **arr, int l, int m, int r, int *comparacao, int *movimentacao) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    // Vetores auxiliares de ponteiros
+    Pessoa *L[n1], *R[n2];
+
+    for (int i = 0; i < n1; i++) {
+        L[i] = arr[l + i];
+    }
+    for (int j = 0; j < n2; j++) {
+        R[j] = arr[m + 1 + j];
+    }
+
+    int i = 0, j = 0, k = l;
+
+    while (i < n1 && j < n2) {
+        (*comparacao)++;
+        if (L[i]->rg <= R[j]->rg) {
+            arr[k++] = L[i++];
+            (*movimentacao)++;
+        } else {
+            arr[k++] = R[j++];
+            (*movimentacao)++;
+        }
+    }
+
+    while (i < n1) {
+        arr[k++] = L[i++];
+        (*movimentacao)++;
+    }
+
+    while (j < n2) {
+        arr[k++] = R[j++];
+        (*movimentacao)++;
+    }
+}
+
+void mergeSort(Pessoa **arr, int l, int r, int *comparacao, int *movimentacao) {
+    (*comparacao)++;
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        mergeSort(arr, l, m, comparacao, movimentacao);
+        mergeSort(arr, m + 1, r, comparacao, movimentacao);
+        merge(arr, l, m, r, comparacao, movimentacao);
+    }
+}
+
 int main(){
 
-    int i=0, num_vagas, num_pessoas=0, opcao;
+    int i=0, num_vagas, num_pessoas=0, opcao, organizado = 0;
     char linha [MAX_LIN], nome [MAX_NOME];
     long int rg;
-
-    typedef struct Pessoa{
-        char nome [MAX_NOME];
-        long int rg;
-    } Pessoa;
 
     Pessoa *listaPessoas;
 
@@ -277,31 +366,91 @@ int main(){
                 printf("Nome: %s  |Rg: %ld  |C: %d  |M  %d  |Tempo: %.12f |Posicao: %d\n", nome, rg, comparacao, movimentacao, tempo, posicao);
 
             }else if(opcao == 7){
-                int encontrado = false;
+                int opcao3 = 0;
 
-                comparacao = 0;
-                movimentacao = 0;
+                printf("\nEscolha uma opcao pelo numero:\n"
+                "[ 1 ] - Busca Sequencial\n"
+                "[ 2 ] - Busca Binaria\n\n");
+                scanf("%d", &opcao3);
 
-                printf("Insira o RG para a busca: ");
-                scanf("%ld", &rg);
-                clock_t inicioTempo = clock();
+                if (opcao3 == 1){
+
+                    int encontrado = false;
+    
+                    comparacao = 0;
+                    movimentacao = 0;
+    
+                    printf("Insira o RG para a busca: ");
+                    scanf("%ld", &rg);
+                    clock_t inicioTempo = clock();
+    
+    
+                    for (i=0; i<num_pessoas && encontrado == false; i++, comparacao++){
+    
+                        comparacao++;
+                        if (listaPessoas[i].rg == rg){
+                            clock_t fimTempo = clock();
+                            tempo = (double) (fimTempo - inicioTempo) / CLOCKS_PER_SEC;
+    
+                            printf("Nome: %s  |Rg: %ld  |C: %d  |M  %d  |Tempo: %.12f |Posicao: %d\n", listaPessoas[i].nome, listaPessoas[i].rg, comparacao, movimentacao, tempo, i);
+    
+                            encontrado = true;
+                        }
+                    }
+                    comparacao++;
+                    if (encontrado == false){
+                        printf("Pessoa nao encontrada na lista.");
+                    }
 
 
-                for (i=0; i<num_pessoas && encontrado == false; i++, comparacao++){
+                }else if(opcao3 == 2){
+
+                    if (organizado == 0){
+                        printf("Organize a lista primeiro.\n");
+                        continue;
+                    }
+    
+                    comparacao = 0;
+                    movimentacao = 0;
+
+    
+                    printf("Insira o RG para a busca: ");
+                    scanf("%ld", &rg);
+                    clock_t inicioTempo = clock();
+
+                    int baixo = 0;
+                    int alto = num_pessoas - 1;
+                    int encontrado = 0;
+
+                    while (baixo <= alto) {
+                        int meio = baixo + (alto - baixo) / 2;
+                        
+                        comparacao++;
+                        if (lista_organiazada[meio]->rg == rg) {
+                            clock_t fimTempo = clock();
+                            tempo = (double)(fimTempo - inicioTempo) / CLOCKS_PER_SEC;
+
+                            printf("Nome: %s | Rg: %ld | C: %d | M: %d | Tempo: %.12f | Posicao: %d\n",
+                                   lista_organiazada[meio]->nome,
+                                   lista_organiazada[meio]->rg,
+                                   comparacao, movimentacao, tempo, meio);
+                            encontrado = 1;
+                            break;
+                        }
+
+                        comparacao+=2;
+                        if (lista_organiazada[meio]->rg < rg) {
+                            comparacao-=1;
+                            baixo = meio + 1;
+                        } else {
+                            alto = meio - 1;
+                        }
+                    }
 
                     comparacao++;
-                    if (listaPessoas[i].rg == rg){
-                        clock_t fimTempo = clock();
-                        tempo = (double) (fimTempo - inicioTempo) / CLOCKS_PER_SEC;
-
-                        printf("Nome: %s  |Rg: %ld  |C: %d  |M  %d  |Tempo: %.12f |Posicao: %d\n", listaPessoas[i].nome, listaPessoas[i].rg, comparacao, movimentacao, tempo, i);
-
-                        encontrado = true;
+                    if (!encontrado) {
+                        printf("Pessoa nao encontrada na lista.\n");
                     }
-                }
-                comparacao++;
-                if (encontrado == false){
-                    printf("Pessoa nao encontrada na lista.");
                 }
 
             }else if(opcao == 8){
@@ -351,7 +500,7 @@ int main(){
 
                 fclose(arq);
             }else if(opcao == 12){
-                int opcao2, organizado = 0;
+                int opcao2;
                 printf("\nEscolha o metodo:\n"
                     "[ 1 ] - Selection Sort\n"
                     "[ 2 ] - Insertion Sort\n"
@@ -482,6 +631,62 @@ int main(){
                     clock_t fimTempo = clock();
                     tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
                     
+                    printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
+                    organizado = 1;
+                }else if (opcao2 == 4){
+                    int j;
+                    comparacao = 0;
+                    movimentacao = 0;
+                    Pessoa *aux;
+                    clock_t inicioTempo = clock();
+
+                    for (int gap = num_pessoas/2; gap > 0; gap /= 2, comparacao++){
+
+                        for (i = gap; i < num_pessoas; i++, comparacao++){
+                            aux = lista_organiazada[i];
+
+                            for (j = i; j >= gap && (lista_organiazada[j-gap]->rg > aux->rg) ; j -= gap, comparacao += 2){
+
+                                movimentacao ++;
+                                lista_organiazada[j] = lista_organiazada[j-gap];
+
+                            }
+
+                            movimentacao++;
+                            lista_organiazada[j] = aux;
+                        }
+                    }
+
+                    clock_t fimTempo = clock();
+                    tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
+                    
+                    printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
+                    organizado = 1;
+
+                }else if (opcao2 == 5){
+                    comparacao = 0;
+                    movimentacao = 0;
+
+                    clock_t inicioTempo = clock();
+
+                    quikSort(lista_organiazada, 0, num_pessoas-1, &comparacao, &movimentacao);
+
+                    clock_t fimTempo = clock();
+                    tempo = (double)(fimTempo-inicioTempo) / CLOCKS_PER_SEC;
+                    
+                    printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
+                    organizado = 1;
+                }else if (opcao2 == 6){
+                    comparacao = 0;
+                    movimentacao = 0;
+
+                    clock_t inicioTempo = clock();
+
+                    mergeSort(lista_organiazada, 0, num_pessoas - 1, &comparacao, &movimentacao);
+
+                    clock_t fimTempo = clock();
+                    tempo = (double)(fimTempo - inicioTempo) / CLOCKS_PER_SEC;
+
                     printf("Lista Organizada!, C: %d, M: %d, Tempo: %.12f\n", comparacao, movimentacao, tempo);
                     organizado = 1;
                 }
