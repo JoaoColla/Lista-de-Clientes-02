@@ -57,8 +57,15 @@ void merge(Pessoa **arr, int l, int m, int r, int *comparacao, int *movimentacao
     int n1 = m - l + 1;
     int n2 = r - m;
 
-    // Vetores auxiliares de ponteiros
-    Pessoa *L[n1], *R[n2];
+    Pessoa **L = (Pessoa **) malloc(n1 * sizeof(Pessoa *));
+    Pessoa **R = (Pessoa **) malloc(n2 * sizeof(Pessoa *));
+
+    if (L == NULL || R == NULL) {
+        printf("Erro de alocacao de memoria no merge.\n");
+        if (L) free(L);
+        if (R) free(R);
+        return;
+    }
 
     for (int i = 0; i < n1; i++) {
         L[i] = arr[l + i];
@@ -89,6 +96,9 @@ void merge(Pessoa **arr, int l, int m, int r, int *comparacao, int *movimentacao
         arr[k++] = R[j++];
         (*movimentacao)++;
     }
+
+    free(L);
+    free(R);
 }
 
 void mergeSort(Pessoa **arr, int l, int r, int *comparacao, int *movimentacao) {
@@ -109,7 +119,7 @@ int main(){
 
     Pessoa *listaPessoas;
 
-    FILE *arq = fopen("C://Users//joaod//MINHAS PASTAS//UTFPR//2 Periodo//Estrutura de Dados-01//Lista de Clientes 02//NomeRG10.txt", "r");
+    FILE *arq = fopen("C://Users//joaod//MINHAS PASTAS//UTFPR//2 Periodo//Estrutura de Dados-01//Lista de Clientes 02//NomeRG100M.txt", "r");
 
     if (arq == NULL){
         printf("Erro abrindo o arquivo");
